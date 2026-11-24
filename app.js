@@ -3,6 +3,7 @@ const panel = document.querySelector('#state');
 const poster = document.querySelector('#poster');
 const start = document.querySelector('#start');
 const toggles = [...document.querySelectorAll('[data-layer]')];
+const views = [...document.querySelectorAll('[data-view]')];
 const reset = document.querySelector('#reset');
 
 start.addEventListener('click', async () => {
@@ -60,10 +61,10 @@ start.addEventListener('click', async () => {
     poster.hidden = true;
     panel.hidden = true;
     const draw = () => renderer.render(scene,camera);
-    const fit = () => {
+    const fit = (direction = [6,3.5,7.6]) => {
       controls.target.copy(center);
       const distance = 9.7 * Math.max(1,1.10/camera.aspect);
-      camera.position.copy(center).addScaledVector(new THREE.Vector3(6,3.5,7.6).normalize(),distance);
+      camera.position.copy(center).addScaledVector(new THREE.Vector3(...direction).normalize(),distance);
       controls.update();
       draw();
     };
@@ -86,10 +87,53 @@ start.addEventListener('click', async () => {
         draw();
       });
     }
+    const wood = model.getObjectByName("core_GLULAM");
+    const nodes = [...new Set(Object.values(layers).flat())];
+    const original = new Map(nodes.map(node => [node, node.position.clone()]));
+    const setVisible = (wanted) => {
+      Object.entries(layers).forEach(([key, group]) => {
+        const visible = wanted.includes(key);
+        group.forEach(node => { node.visible = visible; });
+        toggles.find(button => button.dataset.layer === key).setAttribute('aria-pressed', String(visible));
+      });
+    };
+    let exploded = false;
+    const setExploded = (enabled) => {
+      exploded = enabled;
+      const offsets = {deck:1.04, rail:1.75, supports:.47};
+      Object.entries(layers).forEach(([key,group]) => group.forEach(node => {
+        node.position.copy(original.get(node));
+        if (enabled) node.position.y += offsets[key];
+      }));
+      views.find(button => button.dataset.view === 'explode').setAttribute('aria-pressed', String(enabled));
+    };
+    const directions = {iso:[6,3.5,7.6], side:[0,0,1], top:[0,1,.001]};
+    for (const button of views) {
+      const mode = button.dataset.view;
+      button.disabled = mode === 'full' && !document.fullscreenEnabled;
+      button.addEventListener('click', () => {
+        if (mode === 'full') {
+          if (document.fullscreenElement) document.exitFullscreen();
+          else viewport.parentElement.requestFullscreen();
+          return;
+        }
+        if (mode === 'explode') {
+          setVisible(Object.keys(layers));
+          if (wood) wood.visible = true;
+          setExploded(!exploded);
+        } else if (mode === 'frame' || mode === 'modern') {
+          setExploded(false);
+          setVisible(mode === 'frame' ? [] : Object.keys(layers));
+          if (wood) wood.visible = mode !== 'modern';
+        } else fit(directions[mode]);
+        draw();
+      });
+    }
     reset.disabled = false;
     reset.addEventListener('click', () => {
-      for (const button of toggles) button.setAttribute('aria-pressed','true');
-      Object.values(layers).flat().forEach(mesh => { mesh.visible = true; });
+      setVisible(Object.keys(layers));
+          if (wood) wood.visible = true;
+      setExploded(false);
       fit();
     });
   } catch (error) {
