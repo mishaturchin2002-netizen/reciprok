@@ -24,7 +24,7 @@ start.addEventListener('click', async () => {
     const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
     renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
+    renderer.toneMappingExposure = 1.04;
     const scene = new THREE.Scene();
     const room = new RoomEnvironment();
     const pmrem = new THREE.PMREMGenerator(renderer);
@@ -32,7 +32,7 @@ start.addEventListener('click', async () => {
     room.dispose();
     pmrem.dispose();
     scene.add(new THREE.HemisphereLight(0xffefe1,0x748791,1.35));
-    const key = new THREE.DirectionalLight(0xffd8ae,2.05);
+    const key = new THREE.DirectionalLight(0xffd8ae,1.65);
     key.position.set(4,8,5);
     scene.add(key);
     const camera = new THREE.PerspectiveCamera(35,1,.03,70);
@@ -62,7 +62,7 @@ start.addEventListener('click', async () => {
     const draw = () => renderer.render(scene,camera);
     const fit = () => {
       controls.target.copy(center);
-      const distance = 8.5 * Math.max(1,1.10/camera.aspect);
+      const distance = 9.7 * Math.max(1,1.10/camera.aspect);
       camera.position.copy(center).addScaledVector(new THREE.Vector3(6,3.5,7.6).normalize(),distance);
       controls.update();
       draw();
