@@ -1,6 +1,6 @@
-# <img src="assets/wood-span.svg" width="44" alt=""> РЕЦИПРОК
+# <img src="assets/wood-span-original.png" width="44" alt=""> РЕЦИПРОК
 
-![Модульный мост РЕЦИПРОК](assets/banner-v6-brand.jpg)
+![Модульный мост РЕЦИПРОК](assets/blueprint-banner.jpg)
 
 **Цифровая концепция временного пешеходного моста для кейс-турнира «Время инженеров — 2026».**
 

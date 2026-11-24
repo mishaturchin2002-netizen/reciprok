@@ -35,7 +35,7 @@ function choices(container, labels, onSelect) {
 const assembly = ['Опоры и временная оснастка','Установка поперечин','Продольные балки','Фиксация узлов','Собранный мост'];
 choices(get('assembly-steps'), assembly.map((_,i) => String(i+1)), i => {
   const picture = get('assembly-frame');
-  picture.src = 'assets/assembly-0' + (i+1) + '.jpg';
+  picture.src = 'assets/blueprint-assembly-0' + (i+1) + '.jpg';
   picture.alt = assembly[i];
   get('assembly-label').textContent = assembly[i];
 });
